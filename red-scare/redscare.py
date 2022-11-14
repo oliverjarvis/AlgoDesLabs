@@ -1,34 +1,47 @@
-from dataclasses import dataclass
 import sys
+from dataclasses import dataclass
 from typing import List
+
 import networkx as nx
+
 
 class Parser:
     def __init__(self, filename):
         path = "data/" + filename
-        self.vertices_count, self.edge_count, self.cardinality, self.s, self.t, self.vertices, self.edges = self.load_file(path)
+        (
+            self.vertices_count,
+            self.edge_count,
+            self.cardinality,
+            self.s,
+            self.t,
+            self.vertices,
+            self.edges,
+        ) = self.load_file(path)
         self.directed = self.is_directed(self.edges)
         self.G = self.create_graph(self.vertices, self.edges, self.directed)
 
-    def load_file(self,path):
+    def load_file(self, path):
         with open(path, "r") as graph_file:
-            vertices_count, edge_count, cardinality = tuple(map(int, next(graph_file).split()))
-        
+            vertices_count, edge_count, cardinality = tuple(
+                map(int, next(graph_file).split())
+            )
+
             s, t = tuple(next(graph_file).split())
 
-            
             vertices = [next(graph_file).split() for _ in range(vertices_count)]
-            edges = [next(graph_file).strip().split() for _ in range(edge_count)] # node connection node
-            
+            edges = [
+                next(graph_file).strip().split() for _ in range(edge_count)
+            ]  # node connection node
+
             return vertices_count, edge_count, cardinality, s, t, vertices, edges
 
-    def is_directed(self,edges) -> bool:
+    def is_directed(self, edges) -> bool:
         # if the first edge is directed, the entire graph is directed
         if edges:
             return edges[0][1] == "->"
         return False
 
-    def create_graph(self,vertices:List[str],edges, directed):
+    def create_graph(self, vertices: List[str], edges, directed):
         G = nx.DiGraph()
 
         for node in vertices:
@@ -36,46 +49,47 @@ class Parser:
                 G.add_node(node[0], red=True)
             else:
                 G.add_node(node[0], red=False)
-        
-        for src,_,dst in edges:
-            G.add_edge(src,dst)
+
+        for src, _, dst in edges:
+            G.add_edge(src, dst)
 
             if not directed:
-                G.add_edge(dst,src)
+                G.add_edge(dst, src)
 
         return G
+
 
 class RedScare:
     def __init__(self, G, s, t):
         self.G = G
         self.s = s
         self.t = t
-    
+
     def none(self) -> int:
         """No red nodes in the graph. Returns the path lenght from s to t and -1 if no path exists."""
         graph_data = list(G.nodes.data())
 
         for v, attr in graph_data:
-            if attr['red']:
-                G.remove_node(v)    
+            if attr["red"]:
+                G.remove_node(v)
 
         try:
             path = nx.shortest_path_length(self.G, source=self.s, target=self.t)
         except nx.exception.NetworkXNoPath:
             path = -1
-            
+
         return path
-    
+
     def some(self):
         return
-    
+
     def many(self) -> int:
         """
         Parameters
         ----------
         G : Graph
             Graph to be searched.
-        
+
         Returns
         -------
         int
@@ -88,22 +102,26 @@ class RedScare:
 
         Works on:
         ---------
-        
+
         """
-        
+
         def Opt(i, last_node):
             if memo[i] == None:
                 # Check if i is red: Add 1 if it is
                 if G.nodes[i]["red"]:
-                    values = [Opt(j, i) for j in G.predecessors(i) if j is not last_node]
-                    memo[i] = max([1 + x for x in values], default = 0)
+                    values = [
+                        Opt(j, i) for j in G.predecessors(i) if j is not last_node
+                    ]
+                    memo[i] = max([1 + x for x in values], default=0)
                 # If i is not red: Add 0
                 else:
-                    values = [Opt(j, i) for j in G.predecessors(i) if j is not last_node]
-                    memo[i] = max(values, default = 0)
+                    values = [
+                        Opt(j, i) for j in G.predecessors(i) if j is not last_node
+                    ]
+                    memo[i] = max(values, default=0)
             return memo[i]
-        
-        memo = [None]*(G.number_of_nodes())
+
+        memo = [None] * (G.number_of_nodes())
         # Base case: Opt(s) = 0 if not red, 1 if red
         if G.nodes[self.s]["red"]:
             memo[int(self.s)] = 1
@@ -114,35 +132,35 @@ class RedScare:
 
     def few(self):
         return
-    
+
     def alternate(self):
         """Doc"""
         graph_data = dict(G.nodes.data())
         edges = list(G.edges)
 
         for u, v in edges:
-            u_c:bool = graph_data[u]['red']
-            v_c:bool = graph_data[v]['red']
+            u_c: bool = graph_data[u]["red"]
+            v_c: bool = graph_data[v]["red"]
             if u_c == v_c:
                 G.remove_edge(u, v)
-        
+
         return nx.has_path(self.G, self.s, self.t)
 
     def all(self):
         try:
-            path_length:int = self.none()
+            path_length: int = self.none()
         except:
             path_length = None
         try:
-            some =  self.some()
+            some = self.some()
         except:
             some = None
         try:
-            flow:int = self.many()
+            flow: int = self.many()
         except:
             flow = None
         try:
-            few= self.few()
+            few = self.few()
         except:
             few = None
         try:
@@ -152,9 +170,8 @@ class RedScare:
         return path_length, some, flow, few, has_path
 
 
-if __name__ == '__main__':
-    G = Parser('wall-p-1.txt').G
-    redscare = RedScare(G, '7', '0')
+if __name__ == "__main__":
+    G = Parser("wall-p-1.txt").G
+    redscare = RedScare(G, "7", "0")
     path_length, some, flow, few, has_path = redscare.all()
     print(path_length, some, flow, few, has_path)
-    
