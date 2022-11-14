@@ -129,11 +129,26 @@ class RedScare:
         return nx.has_path(self.G, self.s, self.t)
 
     def all(self):
-        path_length:int = self.none()
-        some =  self.some()
-        flow:int = self.many()
-        few= self.few()
-        has_path: bool = self.alternate()
+        try:
+            path_length:int = self.none()
+        except:
+            path_length = None
+        try:
+            some =  self.some()
+        except:
+            some = None
+        try:
+            flow:int = self.many()
+        except:
+            flow = None
+        try:
+            few= self.few()
+        except:
+            few = None
+        try:
+            has_path: bool = self.alternate()
+        except:
+            has_path = None
         return path_length, some, flow, few, has_path
 
 
