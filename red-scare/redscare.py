@@ -67,13 +67,53 @@ class RedScare:
         return path
     
     def some(self):
-        raise NotImplementedError
+        return
     
-    def many(self):
-        raise NotImplementedError
+    def many(self) -> int:
+        """
+        Parameters
+        ----------
+        G : Graph
+            Graph to be searched.
+        
+        Returns
+        -------
+        int
+            Maximum number of red nodes in a path from s to t in G.
+
+        Flow of the algorithm
+        ---------------------
+        1. Run dynamic programming algorithm:
+            Opt(i) = max(1 + Opt(j)) for all j in G.predecessors(i)
+
+        Works on:
+        ---------
+        
+        """
+        
+        def Opt(i, last_node):
+            if memo[i] == None:
+                # Check if i is red: Add 1 if it is
+                if G.nodes[i]["red"]:
+                    values = [Opt(j, i) for j in G.predecessors(i) if j is not last_node]
+                    memo[i] = max([1 + x for x in values], default = 0)
+                # If i is not red: Add 0
+                else:
+                    values = [Opt(j, i) for j in G.predecessors(i) if j is not last_node]
+                    memo[i] = max(values, default = 0)
+            return memo[i]
+        
+        memo = [None]*(G.number_of_nodes())
+        # Base case: Opt(s) = 0 if not red, 1 if red
+        if G.nodes[self.s]["red"]:
+            memo[int(self.s)] = 1
+        else:
+            memo[int(self.s)] = 0
+        last_node = None
+        return Opt(self.t, last_node)
 
     def few(self):
-        raise NotImplementedError
+        return
     
     def alternate(self):
         """Doc"""
@@ -89,17 +129,17 @@ class RedScare:
         return nx.has_path(self.G, self.s, self.t)
 
     def all(self):
-        path_lenght:int = self.none()
-        # self.some()
-        # self.many()
-        # self.few()
+        path_length:int = self.none()
+        some =  self.some()
+        flow:int = self.many()
+        few= self.few()
         has_path: bool = self.alternate()
+        return path_length, some, flow, few, has_path
 
 
 if __name__ == '__main__':
     G = Parser('wall-p-1.txt').G
     redscare = RedScare(G, '7', '0')
-    none = redscare.none()
-    alternate = redscare.alternate()
-    print(none)
-    print(alternate)
+    path_length, some, flow, few, has_path = redscare.all()
+    print(path_length, some, flow, few, has_path)
+    
