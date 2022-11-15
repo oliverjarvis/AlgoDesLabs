@@ -6,8 +6,8 @@ import networkx as nx
 
 
 class Parser:
-    def __init__(self, filename):
-        path = "data/" + filename
+    def __init__(self, filename: str, data_folder="data/"):
+        path = data_folder + filename
         (
             self.vertices_count,
             self.edge_count,
@@ -81,7 +81,32 @@ class RedScare:
         return path
 
     def some(self):
-        return
+        # First choose a random red node. Find a path from s to the red node. If no path exists, pick another red node. Find a path from that red node to t. If no path exists, pick another red node. Repeat until a path is found. I no path, return False.
+        graph_data = dict(self.G.nodes.data())
+        red_nodes = [node for node, attr in graph_data.items() if attr["red"]]
+        for red_node in red_nodes:
+            tmp_G = self.G.copy()
+            try:
+                path = nx.shortest_path(tmp_G, self.s, red_node)
+            except nx.NetworkXNoPath:
+                path = False
+            if path:
+                # remove the elements in the path from s to red_node
+                for node in path:
+                    if node != red_node:
+                        # could potentially stop if node == self.t
+                        print("removing", node)
+                        tmp_G.remove_node(node)
+
+                # check if there is a path from red_node to t
+                try:
+                    has_path = nx.has_path(tmp_G, red_node, self.t)
+                except nx.NodeNotFound:
+                    has_path = False
+
+                if has_path:
+                    return True
+        return False
 
     def many(self) -> int:
         """
@@ -105,28 +130,34 @@ class RedScare:
 
         """
 
-        def Opt(i, last_node):
-            if memo[i] == None:
+        def Opt(i: int, last_node):
+            if memo[i] is None:
                 # Check if i is red: Add 1 if it is
-                if G.nodes[i]["red"]:
+                if G.nodes[id_to_node[i]]["red"]:
                     values = [
-                        Opt(j, i) for j in G.predecessors(i) if j is not last_node
+                        Opt(j, i)
+                        for j in G.predecessors(id_to_node[i])
+                        if j is not last_node
                     ]
                     memo[i] = max([1 + x for x in values], default=0)
                 # If i is not red: Add 0
                 else:
                     values = [
-                        Opt(j, i) for j in G.predecessors(i) if j is not last_node
+                        Opt(j, i)
+                        for j in G.predecessors(id_to_node[i])
+                        if j is not last_node
                     ]
                     memo[i] = max(values, default=0)
             return memo[i]
 
+        id_to_node = dict(enumerate(G.nodes))
+        node_to_id = {v: k for k, v in id_to_node.items()}
         memo = [None] * (G.number_of_nodes())
         # Base case: Opt(s) = 0 if not red, 1 if red
         if G.nodes[self.s]["red"]:
-            memo[int(self.s)] = 1
+            memo[node_to_id[self.s]] = 1
         else:
-            memo[int(self.s)] = 0
+            memo[node_to_id[self.s]] = 0
         last_node = None
         return Opt(self.t, last_node)
 
@@ -171,7 +202,9 @@ class RedScare:
 
 
 if __name__ == "__main__":
-    G = Parser("wall-p-1.txt").G
+    filename = "increase-n8-2.txt"
+    G = Parser(filename).G
     redscare = RedScare(G, "7", "0")
+    redscare.many()
     path_length, some, flow, few, has_path = redscare.all()
     print(path_length, some, flow, few, has_path)
