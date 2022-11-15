@@ -126,6 +126,8 @@ class RedScare:
         1. Run dynamic programming algorithm:
             Opt(i) = max(1 + Opt(j)) for all j in G.predecessors(i)
         """
+        if not nx.is_directed_acyclic_graph(self.G):
+            return "NP-HARD"
 
         def Opt(i: int, last_node):
             if memo[i] is None:
