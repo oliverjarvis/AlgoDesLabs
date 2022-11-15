@@ -3,10 +3,10 @@ from dataclasses import dataclass
 from typing import List
 
 import networkx as nx
-
+import networkx.algorithms.shortest_paths as sp
 
 class Parser:
-    def __init__(self, filename: str, data_folder="data/"):
+    def __init__(self, filename: str, data_folder="AlgoDesLabs/red-scare/data/"):
         path = data_folder + filename
         (
             self.vertices_count,
@@ -66,15 +66,16 @@ class RedScare:
         self.t = t
 
     def none(self) -> int:
+        tmp_G = self.G.copy()
         """No red nodes in the graph. Returns the path lenght from s to t and -1 if no path exists."""
-        graph_data = list(G.nodes.data())
+        graph_data = list(tmp_G.nodes.data())
 
         for v, attr in graph_data:
             if attr["red"]:
-                G.remove_node(v)
+                tmp_G.remove_node(v)
 
         try:
-            path = nx.shortest_path_length(self.G, source=self.s, target=self.t)
+            path = nx.shortest_path_length(tmp_G, source=self.s, target=self.t)
         except nx.exception.NetworkXNoPath:
             path = -1
 
@@ -150,7 +151,7 @@ class RedScare:
         node_to_id = {v: k for k, v in id_to_node.items()}
         memo = [None] * (G.number_of_nodes())
         # Base case: Opt(s) = 0 if not red, 1 if red
-        if G.nodes[self.s]["red"]:
+        if self.G.nodes[self.s]["red"]:
             memo[node_to_id[self.s]] = 1
         else:
             memo[node_to_id[self.s]] = 0
@@ -158,7 +159,23 @@ class RedScare:
         return Opt(self.t, last_node)
 
     def few(self):
-        return
+        for e in self.G.edges:
+            if self.G.nodes[e[1]]["red"]:
+                self.G.edges[e]["weight"] = 1
+            else:
+                self.G.edges[e]["weight"] = 0
+        
+        sum = 0
+        
+        nodes = sp.shortest_path(self.G, self.s, self.t, weight="weight")
+
+        #sum weights of paths in nodes
+        for i in range(len(nodes) - 1):
+            if i == 0:
+                if self.G.nodes[nodes[i]]["red"]:
+                    sum += 1
+            sum += self.G.edges[nodes[i], nodes[i+1]]["weight"]
+        return sum
 
     def alternate(self):
         """Doc"""
@@ -199,8 +216,8 @@ class RedScare:
 
 if __name__ == "__main__":
     filename = "increase-n8-2.txt"
-    G = Parser(filename).G
-    redscare = RedScare(G, "7", "0")
-    redscare.many()
+    G, s, t = Parser(filename).G, Parser(filename).s, Parser(filename).t
+    redscare = RedScare(G, s, t)
+    #redscare.many()
     path_length, some, flow, few, has_path = redscare.all()
     print(path_length, some, flow, few, has_path)
