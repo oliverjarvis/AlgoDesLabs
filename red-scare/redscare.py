@@ -181,14 +181,14 @@ class RedScare:
 
     def alternate(self):
         """Doc"""
-        graph_data = dict(G.nodes.data())
-        edges = list(G.edges)
+        graph_data = dict(self.G.nodes.data())
+        edges = list(self.G.edges)
 
         for u, v in edges:
             u_c: bool = graph_data[u]["red"]
             v_c: bool = graph_data[v]["red"]
             if u_c == v_c:
-                G.remove_edge(u, v)
+                self.G.remove_edge(u, v)
 
         return nx.has_path(self.G, self.s, self.t)
 
