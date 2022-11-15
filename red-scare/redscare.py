@@ -84,7 +84,7 @@ class RedScare:
         # First choose a random red node. Find a path from s to the red node. If no path exists, pick another red node. Find a path from that red node to t. If no path exists, pick another red node. Repeat until a path is found. I no path, return False.
         graph_data = dict(self.G.nodes.data())
         red_nodes = [node for node, attr in graph_data.items() if attr["red"]]
-        for red_node in red_nodes:
+        for red_node in red_nodes:  #
             tmp_G = self.G.copy()
             try:
                 path = nx.shortest_path(tmp_G, self.s, red_node)
@@ -124,10 +124,6 @@ class RedScare:
         ---------------------
         1. Run dynamic programming algorithm:
             Opt(i) = max(1 + Opt(j)) for all j in G.predecessors(i)
-
-        Works on:
-        ---------
-
         """
 
         def Opt(i: int, last_node):
