@@ -5,8 +5,9 @@ from typing import List
 import networkx as nx
 import networkx.algorithms.shortest_paths as sp
 
+
 class Parser:
-    def __init__(self, filename: str, data_folder="AlgoDesLabs/red-scare/data/"):
+    def __init__(self, filename: str, data_folder="data/"):
         path = data_folder + filename
         (
             self.vertices_count,
@@ -96,7 +97,6 @@ class RedScare:
                 for node in path:
                     if node != red_node:
                         # could potentially stop if node == self.t
-                        print("removing", node)
                         tmp_G.remove_node(node)
 
                 # check if there is a path from red_node to t
@@ -164,17 +164,17 @@ class RedScare:
                 self.G.edges[e]["weight"] = 1
             else:
                 self.G.edges[e]["weight"] = 0
-        
+
         sum = 0
-        
+
         nodes = sp.shortest_path(self.G, self.s, self.t, weight="weight")
 
-        #sum weights of paths in nodes
+        # sum weights of paths in nodes
         for i in range(len(nodes) - 1):
             if i == 0:
                 if self.G.nodes[nodes[i]]["red"]:
                     sum += 1
-            sum += self.G.edges[nodes[i], nodes[i+1]]["weight"]
+            sum += self.G.edges[nodes[i], nodes[i + 1]]["weight"]
         return sum
 
     def alternate(self):
@@ -192,32 +192,32 @@ class RedScare:
 
     def all(self):
         try:
-            path_length: int = self.none()
+            none: int = self.none()
         except:
-            path_length = None
+            none = None
         try:
             some = self.some()
         except:
             some = None
         try:
-            flow: int = self.many()
+            many: int = self.many()
         except:
-            flow = None
+            many = None
         try:
             few = self.few()
         except:
             few = None
         try:
-            has_path: bool = self.alternate()
+            alternate: bool = self.alternate()
         except:
-            has_path = None
-        return path_length, some, flow, few, has_path
+            alternate = None
+        return none, some, many, few, alternate
 
 
 if __name__ == "__main__":
     filename = "increase-n8-2.txt"
     G, s, t = Parser(filename).G, Parser(filename).s, Parser(filename).t
     redscare = RedScare(G, s, t)
-    #redscare.many()
+    # redscare.many()
     path_length, some, flow, few, has_path = redscare.all()
     print(path_length, some, flow, few, has_path)
