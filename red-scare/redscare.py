@@ -149,9 +149,9 @@ class RedScare:
                     memo[i] = max(values, default=0)
             return memo[i]
 
-        id_to_node = dict(enumerate(G.nodes))
+        id_to_node = dict(enumerate(self.G.nodes))
         node_to_id = {v: k for k, v in id_to_node.items()}
-        memo = [None] * (G.number_of_nodes())
+        memo = [None] * (self.G.number_of_nodes())
         # Base case: Opt(s) = 0 if not red, 1 if red
         if self.G.nodes[self.s]["red"]:
             memo[node_to_id[self.s]] = 1
@@ -169,7 +169,10 @@ class RedScare:
 
         sum = 0
 
-        nodes = sp.shortest_path(self.G, self.s, self.t, weight="weight")
+        try:
+            nodes = sp.shortest_path(self.G, self.s, self.t, weight="weight")
+        except nx.NetworkXNoPath:
+            return -1
 
         # sum weights of paths in nodes
         for i in range(len(nodes) - 1):
