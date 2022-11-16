@@ -127,36 +127,29 @@ class RedScare:
         if not nx.is_directed_acyclic_graph(self.G):
             return "NP-HARD"
 
-        def Opt(i: int, last_node):
+        def Opt(i: str) -> int:
+            i = node_to_id[i]
             if memo[i] is None:
+                # Generate values for all predecessors
+                values = [Opt(j) for j in self.G.predecessors(id_to_node[i])]
                 # Check if i is red: Add 1 if it is
-                if G.nodes[id_to_node[i]]["red"]:
-                    values = [
-                        Opt(j, i)
-                        for j in G.predecessors(id_to_node[i])
-                        if j is not last_node
-                    ]
+                if self.G.nodes[id_to_node[i]]["red"]:
                     memo[i] = max([1 + x for x in values], default=0)
                 # If i is not red: Add 0
                 else:
-                    values = [
-                        Opt(j, i)
-                        for j in G.predecessors(id_to_node[i])
-                        if j is not last_node
-                    ]
                     memo[i] = max(values, default=0)
             return memo[i]
 
         id_to_node = dict(enumerate(self.G.nodes))
         node_to_id = {v: k for k, v in id_to_node.items()}
+
         memo = [None] * (self.G.number_of_nodes())
         # Base case: Opt(s) = 0 if not red, 1 if red
         if self.G.nodes[self.s]["red"]:
             memo[node_to_id[self.s]] = 1
         else:
             memo[node_to_id[self.s]] = 0
-        last_node = None
-        return Opt(self.t, last_node)
+        return Opt(self.t)
 
     def few(self):
         for e in self.G.edges:
@@ -218,9 +211,9 @@ class RedScare:
 
 
 if __name__ == "__main__":
-    filename = "increase-n8-2.txt"
+    filename = "ski-illustration.txt"
     G, s, t = Parser(filename).G, Parser(filename).s, Parser(filename).t
     redscare = RedScare(G, s, t)
-    # redscare.many()
-    path_length, some, flow, few, has_path = redscare.all()
-    print(path_length, some, flow, few, has_path)
+    print(redscare.many())
+    # path_length, some, flow, few, has_path = redscare.all()
+    # print(path_length, some, flow, few, has_path)
