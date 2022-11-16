@@ -127,6 +127,10 @@ class RedScare:
         if not nx.is_directed_acyclic_graph(self.G):
             return "NP-HARD"
 
+        # Check if there is a path from s to t
+        if not nx.has_path(self.G, self.s, self.t):
+            return -1
+
         def Opt(i: str) -> int:
             i = node_to_id[i]
             if memo[i] is None:
