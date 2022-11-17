@@ -1,8 +1,9 @@
 import os
 
-from tqdm import tqdm
-
 from redscare import Parser, RedScare
+
+# from tqdm import tqdm
+
 
 # list of all files from data/ directory
 datafiles = [
@@ -10,7 +11,6 @@ datafiles = [
 ]
 
 outfile = ["filename, none, some, many, few, alternate"]
-
 
 for idx, (datafile, size) in enumerate(datafiles):
     print(f"{idx+1}/{len(datafiles)} - Processing {datafile}")

@@ -1,3 +1,4 @@
+import math
 from typing import List
 
 import networkx as nx
@@ -66,7 +67,10 @@ class RedScare:
 
     def none(self) -> int:
         tmp_G = self.G.copy()
-        """No red nodes in the graph. Returns the path lenght from s to t and -1 if no path exists."""
+        """No red nodes in the graph. Returns the path lenght from s to t and -1 if no path exists.
+        Removal of R in V = V, find path = V+E. 
+        Actual Time: V+((V-R)+(E-E_in/out_R))
+        """
         graph_data = list(tmp_G.nodes.data())
 
         for v, attr in graph_data:
@@ -81,7 +85,15 @@ class RedScare:
         return path
 
     def some(self):
-        # First choose a random red node. Find a path from s to the red node. If no path exists, pick another red node. Find a path from that red node to t. If no path exists, pick another red node. Repeat until a path is found. I no path, return False.
+        """
+        First choose a random red node. Find a path from s to the red node.
+        If no path exists, pick another red node.
+        Find a path from that red node to t.
+        If no path exists, pick another red node. Repeat until a path is found.
+        I no path, return False.
+        Time complexity --> 2V*(V+E) --> bfs på alle røde 2 gange,
+        og worst case er alle røde så V. BIG O(V^2+E).
+        """
         graph_data = dict(self.G.nodes.data())
         red_nodes = [node for node, attr in graph_data.items() if attr["red"]]
         for red_node in red_nodes:  #
@@ -123,25 +135,28 @@ class RedScare:
         ---------------------
         1. Run dynamic programming algorithm:
             Opt(i) = max(1 + Opt(j)) for all j in G.predecessors(i)
+        ---------------------
+        Dynamic part -> O(V)
         """
         if not nx.is_directed_acyclic_graph(self.G):
             return "NP-HARD"
 
-        # Check if there is a path from s to t
-        if not nx.has_path(self.G, self.s, self.t):
-            return -1
-
         def Opt(i: str) -> int:
             i = node_to_id[i]
             if memo[i] is None:
-                # Generate values for all predecessors
-                values = [Opt(j) for j in self.G.predecessors(id_to_node[i])]
-                # Check if i is red: Add 1 if it is
-                if self.G.nodes[id_to_node[i]]["red"]:
-                    memo[i] = max([1 + x for x in values], default=0)
-                # If i is not red: Add 0
+                pre = [x for x in self.G.predecessors(id_to_node[i])]
+                if pre:
+                    # Generate values for all predecessors
+                    values = [Opt(j) for j in pre]
+                    # Check if i is red: Add 1 if it is
+                    if self.G.nodes[id_to_node[i]]["red"]:
+                        memo[i] = max([1 + x for x in values], default=0)
+                    # If i is not red: Add 0
+                    else:
+                        memo[i] = max(values, default=0)
                 else:
-                    memo[i] = max(values, default=0)
+                    memo[i] = float("-inf")
+                    return memo[i]
             return memo[i]
 
         id_to_node = dict(enumerate(self.G.nodes))
@@ -153,32 +168,39 @@ class RedScare:
             memo[node_to_id[self.s]] = 1
         else:
             memo[node_to_id[self.s]] = 0
-        return Opt(self.t)
+            
+        results = Opt(self.t)
+        if results == float('-inf'):
+            return -1
+        else:
+            return results
 
     def few(self):
+        """
+        Time complexity: Augmentation -> E, Path finding -> V+E. 
+        O(V+E) 
+        """
         for e in self.G.edges:
             if self.G.nodes[e[1]]["red"]:
                 self.G.edges[e]["weight"] = 1
             else:
                 self.G.edges[e]["weight"] = 0
 
-        sum = 0
-
         try:
-            nodes = sp.shortest_path(self.G, self.s, self.t, weight="weight")
+            sum = sp.shortest_path_length(self.G, self.s, self.t, weight="weight")
+            if self.G.nodes[self.s]["red"]:
+                return sum + 1 
+            else:
+                return sum 
         except nx.NetworkXNoPath:
             return -1
 
-        # sum weights of paths in nodes
-        for i in range(len(nodes) - 1):
-            if i == 0:
-                if self.G.nodes[nodes[i]]["red"]:
-                    sum += 1
-            sum += self.G.edges[nodes[i], nodes[i + 1]]["weight"]
-        return sum
 
     def alternate(self):
-        """Doc"""
+        """
+        Time complexity: Augmentation -> E, Path finding -> V+E. 
+        O(V+E)
+        """
         graph_data = dict(self.G.nodes.data())
         edges = list(self.G.edges)
 
@@ -192,22 +214,27 @@ class RedScare:
 
     def all(self):
         try:
+            print("none")
             none: int = self.none()
         except:
             none = None
         try:
+            print("some")
             some = self.some()
         except:
             some = None
         try:
+            print("many")
             many: int = self.many()
         except:
             many = None
         try:
+            print("few")
             few = self.few()
         except:
             few = None
         try:
+            print("alternate")
             alternate: bool = self.alternate()
         except:
             alternate = None
