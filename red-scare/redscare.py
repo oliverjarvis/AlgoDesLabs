@@ -66,25 +66,26 @@ class RedScare:
         self.t = t
 
     def none(self) -> int:
-        tmp_G = self.G.copy()
         """No red nodes in the graph. Returns the path lenght from s to t and -1 if no path exists.
         Removal of R in V = V, find path = V+E. 
         Actual Time: V+((V-R)+(E-E_in/out_R))
         """
-        graph_data = list(tmp_G.nodes.data())
+        tmp_G = self.G.copy()
 
-        for v, attr in graph_data:
-            if attr["red"]:
-                tmp_G.remove_node(v)
+        for node in self.G.nodes:
+            if self.G.nodes[node]["red"]:
+                tmp_G.remove_node(node)
 
         try:
             path = nx.shortest_path_length(tmp_G, source=self.s, target=self.t)
         except nx.exception.NetworkXNoPath:
             path = -1
+        except nx.exception.NodeNotFound: # node removed since it's red
+            path = -1
 
         return path
 
-    def some(self):
+    def some(self) -> bool:
         """
         First choose a random red node. Find a path from s to the red node.
         If no path exists, pick another red node.
@@ -175,7 +176,7 @@ class RedScare:
         else:
             return results
 
-    def few(self):
+    def few(self) -> int:
         """
         Time complexity: Augmentation -> E, Path finding -> V+E. 
         O(V+E) 
@@ -213,31 +214,17 @@ class RedScare:
         return nx.has_path(self.G, self.s, self.t)
 
     def all(self):
-        try:
-            print("none")
-            none: int = self.none()
-        except:
-            none = None
-        try:
-            print("some")
-            some = self.some()
-        except:
-            some = None
-        try:
-            print("many")
-            many: int = self.many()
-        except:
-            many = None
-        try:
-            print("few")
-            few = self.few()
-        except:
-            few = None
-        try:
-            print("alternate")
-            alternate: bool = self.alternate()
-        except:
-            alternate = None
+        print("none")
+        none: int = self.none()
+        print("some")
+        some: bool  = self.some()
+        print("many")
+        many: int = self.many()
+        print("few")
+        few :int= self.few()
+        print("alternate")
+        alternate: bool = self.alternate()
+        
         return none, some, many, few, alternate
 
 
@@ -245,6 +232,6 @@ if __name__ == "__main__":
     filename = "ski-illustration.txt"
     G, s, t = Parser(filename).G, Parser(filename).s, Parser(filename).t
     redscare = RedScare(G, s, t)
-    print(redscare.many())
+    print(redscare.none())
     # path_length, some, flow, few, has_path = redscare.all()
     # print(path_length, some, flow, few, has_path)
