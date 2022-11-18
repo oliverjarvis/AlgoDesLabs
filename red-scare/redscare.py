@@ -67,7 +67,7 @@ class RedScare:
 
     def none(self) -> int:
         """No red nodes in the graph. Returns the path lenght from s to t and -1 if no path exists.
-        Removal of R in V = V, find path = V+E. 
+        Removal of R in V = V, find path = V+E.
         Actual Time: V+((V-R)+(E-E_in/out_R))
         """
         tmp_G = self.G.copy()
@@ -80,7 +80,7 @@ class RedScare:
             path = nx.shortest_path_length(tmp_G, source=self.s, target=self.t)
         except nx.exception.NetworkXNoPath:
             path = -1
-        except nx.exception.NodeNotFound: # node removed since it's red
+        except nx.exception.NodeNotFound:  # node removed since it's red
             path = -1
 
         return path
@@ -169,17 +169,17 @@ class RedScare:
             memo[node_to_id[self.s]] = 1
         else:
             memo[node_to_id[self.s]] = 0
-            
+
         results = Opt(self.t)
-        if results == float('-inf'):
+        if results == float("-inf"):
             return -1
         else:
             return results
 
     def few(self) -> int:
         """
-        Time complexity: Augmentation -> E, Path finding -> V+E. 
-        O(V+E) 
+        Time complexity: Augmentation -> E, Path finding -> V+E.
+        O(V+E)
         """
         for e in self.G.edges:
             if self.G.nodes[e[1]]["red"]:
@@ -190,16 +190,15 @@ class RedScare:
         try:
             sum = sp.shortest_path_length(self.G, self.s, self.t, weight="weight")
             if self.G.nodes[self.s]["red"]:
-                return sum + 1 
+                return sum + 1
             else:
-                return sum 
+                return sum
         except nx.NetworkXNoPath:
             return -1
 
-
     def alternate(self):
         """
-        Time complexity: Augmentation -> E, Path finding -> V+E. 
+        Time complexity: Augmentation -> E, Path finding -> V+E.
         O(V+E)
         """
         graph_data = dict(self.G.nodes.data())
@@ -217,14 +216,14 @@ class RedScare:
         print("none")
         none: int = self.none()
         print("some")
-        some: bool  = self.some()
+        some: bool = self.some()
         print("many")
         many: int = self.many()
         print("few")
-        few :int= self.few()
+        few: int = self.few()
         print("alternate")
         alternate: bool = self.alternate()
-        
+
         return none, some, many, few, alternate
 
 
