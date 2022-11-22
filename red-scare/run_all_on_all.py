@@ -15,9 +15,9 @@ outfile = ["filename, none, some, many, few, alternate"]
 for idx, (datafile, size) in enumerate(datafiles):
     print(f"{idx+1}/{len(datafiles)} - Processing {datafile}")
 
-    if size > 1000000:
-        print("Skipping large file")
-        continue
+    # if size > 1000000:
+    #     print("Skipping large file")
+    #     continue
 
     p = Parser(datafile)
     G, s, t = p.G, p.s, p.t

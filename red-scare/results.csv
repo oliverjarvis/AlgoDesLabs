@@ -26,8 +26,12 @@ common-2-250.txt, -1, False, NP-HARD, -1, False
 common-2-2500.txt, -1, True, NP-HARD, 1, True
 common-2-3000.txt, -1, True, NP-HARD, 1, True
 common-2-3500.txt, -1, True, NP-HARD, 1, True
+common-2-4000.txt, -1, True, NP-HARD, 1, True
+common-2-4500.txt, -1, True, NP-HARD, 1, True
 common-2-50.txt, -1, False, NP-HARD, -1, False
 common-2-500.txt, -1, True, NP-HARD, 1, True
+common-2-5000.txt, -1, True, NP-HARD, 1, True
+common-2-5757.txt, -1, True, NP-HARD, 1, True
 dodecahedron.txt, -1, True, NP-HARD, 2, False
 gnm-10-15-0.txt, 1, False, NP-HARD, 0, False
 gnm-10-15-1.txt, -1, True, NP-HARD, 1, True
@@ -96,6 +100,10 @@ rusty-2-2000.txt, 5, True, NP-HARD, 0, False
 rusty-2-2500.txt, 4, True, NP-HARD, 0, False
 rusty-2-3000.txt, 4, True, NP-HARD, 0, False
 rusty-2-3500.txt, 4, True, NP-HARD, 0, False
+rusty-2-4000.txt, 4, True, NP-HARD, 0, False
+rusty-2-4500.txt, 4, True, NP-HARD, 0, False
+rusty-2-5000.txt, 4, True, NP-HARD, 0, False
+rusty-2-5757.txt, 4, True, NP-HARD, 0, False
 ski-illustration.txt, 8, True, 1, 0, False
 ski-level10-1.txt, -1, False, -1, -1, False
 ski-level10-2.txt, -1, True, 4, 1, False
@@ -125,6 +133,7 @@ wall-n-1.txt, 1, False, NP-HARD, 0, False
 wall-n-10.txt, 1, False, NP-HARD, 0, False
 wall-n-100.txt, 1, False, NP-HARD, 0, False
 wall-n-1000.txt, 1, False, NP-HARD, 0, False
+wall-n-10000.txt, 1, False, NP-HARD, 0, False
 wall-n-2.txt, 1, False, NP-HARD, 0, False
 wall-n-3.txt, 1, False, NP-HARD, 0, False
 wall-n-4.txt, 1, False, NP-HARD, 0, False
@@ -132,6 +141,7 @@ wall-p-1.txt, 1, False, NP-HARD, 0, False
 wall-p-10.txt, 1, False, NP-HARD, 0, False
 wall-p-100.txt, 1, False, NP-HARD, 0, False
 wall-p-1000.txt, 1, False, NP-HARD, 0, False
+wall-p-10000.txt, 1, False, NP-HARD, 0, False
 wall-p-2.txt, 1, False, NP-HARD, 0, False
 wall-p-3.txt, 1, False, NP-HARD, 0, False
 wall-p-4.txt, 1, False, NP-HARD, 0, False
@@ -139,6 +149,7 @@ wall-z-1.txt, 1, False, NP-HARD, 0, False
 wall-z-10.txt, 1, False, NP-HARD, 0, False
 wall-z-100.txt, 1, False, NP-HARD, 0, False
 wall-z-1000.txt, 1, False, NP-HARD, 0, False
+wall-z-10000.txt, 1, False, NP-HARD, 0, False
 wall-z-2.txt, 1, False, NP-HARD, 0, False
 wall-z-3.txt, 1, False, NP-HARD, 0, False
 wall-z-4.txt, 1, False, NP-HARD, 0, False
