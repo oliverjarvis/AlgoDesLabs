@@ -99,10 +99,12 @@ class RedScare:
         red_nodes = [node for node, attr in graph_data.items() if attr["red"]]
         for red_node in red_nodes:  #
             tmp_G = self.G.copy()
+            
             try:
                 path = nx.shortest_path(tmp_G, self.s, red_node)
             except nx.NetworkXNoPath:
                 path = False
+
             if path:
                 # remove the elements in the path from s to red_node
                 for node in path:
