@@ -6,6 +6,7 @@ import networkx.algorithms.shortest_paths as sp
 vertices_name = {}
 idx_to_name = {}
 
+
 def parser(file):
     global idx_to_name
     # load data
@@ -21,11 +22,13 @@ def parser(file):
     s, t = vertices_name[s], vertices_name[t]
 
     edges = [next(file).strip().split() for _ in range(edge_count)]
-    directed = all([edge[1] == "->" for edge in edges]) # True if the graph is directed
+    directed = all([edge[1] == "->" for edge in edges])  # True if the graph is directed
     edges = [(vertices_name[edge[0]], vertices_name[edge[2]]) for edge in edges]
 
     all_vertices = list(map(lambda x: vertices_name[x[0]], vertices))
-    red_vertices = list(map(lambda x: vertices_name[x[0]], filter(lambda x: len(x) == 2, vertices)))
+    red_vertices = list(
+        map(lambda x: vertices_name[x[0]], filter(lambda x: len(x) == 2, vertices))
+    )
 
     G = nx.DiGraph()
 
@@ -44,7 +47,7 @@ def parser(file):
     if not directed:
         for e in edges:
             G.add_edge(e[1], e[0])
-    
+
     return G, s, t
 
 
@@ -55,21 +58,23 @@ def few(G, s, t):
             G.edges[e]["weight"] = 1
         else:
             G.edges[e]["weight"] = 0
-    
+
     sum = 0
-    
+
     nodes = sp.shortest_path(G, s, t, weight="weight")
 
-    #sum weights of paths in nodes
+    # sum weights of paths in nodes
     for i in range(len(nodes) - 1):
         if i == 0:
             if G.nodes[nodes[i]]["red"]:
                 sum += 1
-        sum += G.edges[nodes[i], nodes[i+1]]["weight"]
+        sum += G.edges[nodes[i], nodes[i + 1]]["weight"]
     return sum, nodes
+
 
 def translate_nodes(nodes):
     return [idx_to_name[n] for n in nodes]
+
 
 file = open("data/gnm-10-15-0.txt")
 G, s, t = parser(file)

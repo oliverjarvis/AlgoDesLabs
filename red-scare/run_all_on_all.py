@@ -2,9 +2,6 @@ import os
 
 from redscare import Parser, RedScare
 
-# from tqdm import tqdm
-
-
 # list of all files from data/ directory
 datafiles = [
     (f, os.path.getsize(f"data/{f}")) for f in os.listdir("data") if f.endswith(".txt")
