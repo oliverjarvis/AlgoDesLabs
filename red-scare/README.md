@@ -9,3 +9,4 @@ Hand-in contains:
 - README.md
 - redscare.py
 - report.pdf
+- results.txt
