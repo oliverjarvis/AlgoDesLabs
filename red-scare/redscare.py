@@ -85,51 +85,14 @@ class RedScare:
 
         return path
 
-    def new_some(self) -> bool:
+    def some(self) -> bool:
         """
         This solution utilize the .many() since it is a subset of the problem.
         """
         many = self.many()
         if many == "NP-HARD" or many == -1:
-            return "NP-HARD"        
+            return False       
         return many >= 1
-
-    def some(self):
-        """
-        First choose a random red node. Find a path from s to the red node.
-        If no path exists, pick another red node.
-        Find a path from that red node to t.
-        If no path exists, pick another red node. Repeat until a path is found.
-        I no path, return False.
-        Time complexity --> 2V*(V+E) --> bfs på alle røde 2 gange,
-        og worst case er alle røde så V. BIG O(V^2+E).
-        """
-        graph_data = dict(self.G.nodes.data())
-        red_nodes = [node for node, attr in graph_data.items() if attr["red"]]
-        for red_node in red_nodes:  #
-            tmp_G = self.G.copy()
-            
-            try:
-                path = nx.shortest_path(tmp_G, self.s, red_node)
-            except nx.NetworkXNoPath:
-                path = False
-
-            if path:
-                # remove the elements in the path from s to red_node
-                for node in path:
-                    if node != red_node:
-                        # could potentially stop if node == self.t
-                        tmp_G.remove_node(node)
-
-                # check if there is a path from red_node to t
-                try:
-                    has_path = nx.has_path(tmp_G, red_node, self.t)
-                except nx.NodeNotFound:
-                    has_path = False
-
-                if has_path:
-                    return True
-        return False
 
     def many(self) -> int:
         """
@@ -148,7 +111,7 @@ class RedScare:
         1. Run dynamic programming algorithm:
             Opt(i) = max(1 + Opt(j)) for all j in G.predecessors(i)
         ---------------------
-        Dynamic part -> O(V)
+        Dynamic part -> O(|E|) \in O(|V|^2)
         """
         if not nx.is_directed_acyclic_graph(self.G):
             return "NP-HARD"
@@ -208,8 +171,10 @@ class RedScare:
             return -1
 
     def alternate(self):
-        """
-        Time complexity: Augmentation -> E, Path finding -> V+E.
+        """ 
+        Time complexity: 
+            Augmentation -> E, 
+            Path finding -> V+E.
         O(V+E)
         """
         graph_data = dict(self.G.nodes.data())
@@ -224,24 +189,13 @@ class RedScare:
         return nx.has_path(self.G, self.s, self.t)
 
     def all(self):
-        print("none")
         none: int = self.none()
-        print("some")
         some: bool = self.some()
-        print("many")
         many: int = self.many()
-        print("few")
         few: int = self.few()
-        print("alternate")
         alternate: bool = self.alternate()
-
         return none, some, many, few, alternate
 
 
 if __name__ == "__main__":
-    filename = "ski-illustration.txt"
-    G, s, t = Parser(filename).G, Parser(filename).s, Parser(filename).t
-    redscare = RedScare(G, s, t)
-    print(redscare.none())
-    # path_length, some, flow, few, has_path = redscare.all()
-    # print(path_length, some, flow, few, has_path)
+    pass

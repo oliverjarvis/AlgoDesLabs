@@ -6,7 +6,8 @@ from redscare import Parser, RedScare
 def test_P3_0():
     p = Parser("P3-0.txt", "instance-generators/handmade/")
     redscare = RedScare(p.G, p.s, p.t)
-    assert redscare.some()
+
+    assert not redscare.some() # not a DAG
 
 
 def test_P3_1():
@@ -18,7 +19,7 @@ def test_P3_1():
 def test_K3_0():
     p = Parser("K3-0.txt", "instance-generators/handmade/")
     redscare = RedScare(p.G, p.s, p.t)
-    assert redscare.some()
+    assert not redscare.some() # not a DAG
 
 
 def test_K3_1():
