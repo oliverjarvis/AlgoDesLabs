@@ -1,4 +1,3 @@
-import math
 from typing import List
 
 import networkx as nx
@@ -86,12 +85,10 @@ class RedScare:
         return path
 
     def some(self) -> bool:
-        """
-        This solution utilize the .many() since it is a subset of the problem.
-        """
+        """This solution utilize the .many() since it is a subset of the problem."""
         many = self.many()
         if many == "NP-HARD" or many == -1:
-            return False       
+            return False
         return many >= 1
 
     def many(self) -> int:
@@ -171,9 +168,9 @@ class RedScare:
             return -1
 
     def alternate(self):
-        """ 
-        Time complexity: 
-            Augmentation -> E, 
+        """
+        Time complexity:
+            Augmentation -> E,
             Path finding -> V+E.
         O(V+E)
         """
