@@ -1,3 +1,4 @@
+import os
 from typing import List
 
 import networkx as nx
@@ -108,7 +109,7 @@ class RedScare:
         1. Run dynamic programming algorithm:
             Opt(i) = max(1 + Opt(j)) for all j in G.predecessors(i)
         ---------------------
-        Dynamic part -> O(|E|) \in O(|V|^2)
+        Dynamic part -> O(|E|) in O(|V|^2)
         """
         if not nx.is_directed_acyclic_graph(self.G):
             return "NP-HARD"
@@ -192,7 +193,29 @@ class RedScare:
         few: int = self.few()
         alternate: bool = self.alternate()
         return none, some, many, few, alternate
+    
+def create_results():
+    
+    # list of all files from data/ directory
+    datafiles = [f for f in os.listdir("data") if f.endswith(".txt")]
+
+    outfile = ["filename, none, some, many, few, alternate"]
+
+    for idx, datafile in enumerate(datafiles):
+        print(f"{idx+1}/{len(datafiles)} - Processing {datafile}")
+
+        p = Parser(datafile)
+        r = RedScare(p.G, p.s, p.t)
+        none, some, many, few, alternate = r.all()
+        outfile.append(f"{datafile}, {none}, {some}, {many}, {few}, {alternate}")
+
+    # sort all lines except the first one according to the 0th column
+    outfile = outfile[:1] + sorted(outfile[1:], key=lambda x: x.split(",")[0])
+
+    with open("results.txt", "w") as f:
+        for line in outfile:
+            f.write(f"{line}\n")
 
 
 if __name__ == "__main__":
-    pass
+    create_results()
